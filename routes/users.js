@@ -4,8 +4,6 @@ const UserController = require("../controller/User");
 
 //apporte la fonction d'enregistrement d'un utilisateur
 const {
-  userRegistration,
-  userLogin,
   userAuth,
   serializeUser,
   checkRole,
@@ -13,35 +11,38 @@ const {
 
 //Users Registration Route
 router.post("/registrer-user", async (req, res) => {
-  await userRegistration(req.body, "user", res);
+  await UserController.userRegistration(req.body, "user", res);
 });
 
 //Admin Registration Route
 router.post("/registrer-admin", async (req, res) => {
-  await userRegistration(req.body, "admin", res);
+  await UserController.userRegistration(req.body, "admin", res);
 });
 
-//Super Admin Registration Route
-router.post("/registrer-super-admin", async (req, res) => {
-  await userRegistration(req.body, "superadmin", res);
+//Login Route
+router.post("/login", async (req, res) => {
+  await UserController.userLogin(req.body, res);
+});
+
+
+
+//Get Role
+router.get("/get-role", async (req, res) => {
+  await UserController.getUserRole(req.body, res);
 });
 
 /*********************************************/
 
-//Users Login Route
-router.post("/login-user", async (req, res) => {
-  await userLogin(req.body, "user", res);
-});
+//Super Admin Registration Route
+// router.post("/registrer-super-admin", async (req, res) => {
+//   await userRegistration(req.body, "superadmin", res);
+// });
 
-//Admin Login Route
-router.post("/login-admin", async (req, res) => {
-  await userLogin(req.body, "admin", res);
-});
 
 //Super Admin Login Route
-router.post("/login-super-admin", async (req, res) => {
-  await userLogin(req.body, "superadmin", res);
-});
+// router.post("/login-super-admin", async (req, res) => {
+//   await userLogin(req.body, "superadmin", res);
+// });
 
 /*********************************************/
 
@@ -50,8 +51,10 @@ router.get("/profile", userAuth, async (req, res) => {
   return res.json(serializeUser(req.user));
 });
 
-//Voir tout les profils si ADMIN ou SUPERADMIN
-router.get("/profiles", [userAuth, checkRole(['admin','superadmin']), UserController.getAllUsers])
+//Profile Route
+router.get("/getRole", userAuth, async (req, res) => {
+  return res.json(serializeUser(req.user));
+});
 
 //Users Protected Route
 router.get(
@@ -92,6 +95,16 @@ router.get(
   async (req, res) => {
     return res.json(`Hello ${req.user.role}`);
   }
+);
+
+/************************** */
+
+//Voir tout les profils de commerciaux si ADMIN ou SUPERADMIN
+router.get(
+  "/profiles",
+  userAuth,
+  checkRole(["admin", "superadmin"]),
+  UserController.getAllUsers
 );
 
 module.exports = router;
