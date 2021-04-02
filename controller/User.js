@@ -87,7 +87,7 @@ const Auth = require ("../utils/Auth")
       role: user.role,
       email: user.email,
       token: `Bearer ${token}`,
-      expiresIn: 168,
+      expiresIn: 3600,
     };
 
     return res.status(200).json({
